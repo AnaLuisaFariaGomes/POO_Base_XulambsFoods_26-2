@@ -74,9 +74,11 @@ namespace XulambsFoods {
             _descricao = $"Pizza com {_quantIngredientes} adicionais";
         }
 
-        private bool PodeAdicionar(int quantos) {
-            return (quantos >= 0 &&
-                    quantos + _quantIngredientes <= MaxIngredientes);
+        private void VerificarInsercao(int quantos) {
+            if (quantos < 0)
+                throw new ArgumentException();
+            if (quantos + _quantIngredientes > MaxIngredientes)
+                throw new InvalidOperationException();
         }
         #endregion
 
@@ -96,10 +98,10 @@ namespace XulambsFoods {
         /// <param name="quantos">Quantidade de ingredientes a ser adicionada. Deve ser maior ou igual a 0</param>
         /// <returns>A quantidade de ingredientes na pizza após a execução do método.</returns>
         public int AdicionarIngredientes(int quantos) {
-            if (PodeAdicionar(quantos)) {
-                _quantIngredientes += quantos;
-                ModificarDescricao();
-            }
+            VerificarInsercao(quantos);
+            _quantIngredientes += quantos;
+            ModificarDescricao();
+            
             return _quantIngredientes;
         }
 

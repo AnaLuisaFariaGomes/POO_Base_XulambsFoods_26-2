@@ -7,7 +7,7 @@ namespace XulambsFoods
     public class XulambsApp
     {
         static LinkedList<Pedido> pedidos;
-        static string versao = "0.4";
+        static string versao = "0.42";
 
         #region utilidades
         static void Pausa()
@@ -32,10 +32,22 @@ namespace XulambsFoods
         }
         #endregion
 
+        static int LerInteiro() {
+            int opcao;
+            try {
+                opcao = int.Parse(Console.ReadLine());
+            }
+            catch (FormatException) {
+                Console.WriteLine("Somente valores numéricos");
+                opcao = 99;
+            }
+            return opcao;
+        }
         #region menus
         static int MenuPrincipal()
         {
             Cabecalho();
+            
             StringBuilder menu = new StringBuilder();
             menu.AppendLine("1 - Abrir um pedido");
             menu.AppendLine("2 - Alterar pedido");
@@ -44,7 +56,8 @@ namespace XulambsFoods
             menu.AppendLine("0 - Finalizar");
             menu.Append("Sua opção: ");
             Console.Write(menu.ToString());
-            return int.Parse(Console.ReadLine());
+            
+            return LerInteiro();
         }
         #endregion
 
@@ -73,7 +86,7 @@ namespace XulambsFoods
                 i++;
             }
             Console.Write("Sua escolha: ");
-            int escolha = int.Parse(Console.ReadLine());
+            int escolha = LerInteiro();
             EBorda borda = Enum.GetValues<EBorda>()[escolha - 1];
 
             pizza.AdicionarBorda(borda);
@@ -84,7 +97,7 @@ namespace XulambsFoods
         static int EscolherIngredientes()
         {
             Console.Write("Quantos ingredientes você deseja (0-8)? ");
-            return int.Parse(Console.ReadLine());
+            return LerInteiro();
         }
 
         static Pizza ComprarPizza()
@@ -98,10 +111,20 @@ namespace XulambsFoods
             EscolherBorda(novaPizza);
 
             int quantos = EscolherIngredientes();
-            novaPizza.AdicionarIngredientes(quantos);
-
-
-            ImprimirDados(novaPizza);
+            try {
+                novaPizza.AdicionarIngredientes(quantos);
+                ImprimirDados(novaPizza);
+            }
+            catch (ArgumentException) {
+                Console.WriteLine("Ingredientes não podem ser negativos.");
+                Pausa();
+                return ComprarPizza();
+            }
+            catch (InvalidOperationException) {
+                Console.WriteLine("Ingredientes máximos: 8.");
+                novaPizza = new Pizza(8);
+            }
+            
 
             return novaPizza;
         }
@@ -123,7 +146,7 @@ namespace XulambsFoods
             Console.WriteLine("1 - Local");
             Console.WriteLine("2 - Para entrega");
             Console.Write("Digite sua escolha: ");
-            int opcao = int.Parse(Console.ReadLine());
+            int opcao = LerInteiro();
             return opcao switch
             {
                 1 => new PedidoLocal(),
@@ -151,7 +174,7 @@ namespace XulambsFoods
         {
             Cabecalho();
             Console.Write("Número do pedido: ");
-            int codigo = int.Parse(Console.ReadLine());
+            int codigo = LerInteiro();
             Pedido pedido = Localizar(codigo) as Pedido;   //conversão segura: objeto ou nulo
             ImprimirDados(pedido);
         }
@@ -160,7 +183,7 @@ namespace XulambsFoods
         {
             Cabecalho();
             Console.Write("Número do pedido: ");
-            int codigo = int.Parse(Console.ReadLine());
+            int codigo = LerInteiro();
 
             Pedido pedido = Localizar(codigo) as Pedido;   //conversão segura: objeto ou nulo
             pedido?.FecharPedido();             //null safety: só executa se o pedido existir
@@ -174,7 +197,7 @@ namespace XulambsFoods
             Pizza novaPizza = ComprarPizza();
 
             Console.Write("Número do pedido: ");
-            int codigo = int.Parse(Console.ReadLine());
+            int codigo = LerInteiro();
 
             Pedido pedido = Localizar(codigo) as Pedido;   //conversão segura: objeto ou nulo
             if (pedido != null)
