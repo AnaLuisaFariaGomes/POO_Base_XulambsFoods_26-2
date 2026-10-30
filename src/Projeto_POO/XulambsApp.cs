@@ -103,11 +103,9 @@ namespace XulambsFoods
         static Pizza ComprarPizza()
         {
             Cabecalho();
-
-            Pizza novaPizza = new Pizza();
-
             Console.WriteLine("Comprando uma pizza:");
 
+            Pizza novaPizza = new Pizza();
             EscolherBorda(novaPizza);
 
             int quantos = EscolherIngredientes();
@@ -115,13 +113,13 @@ namespace XulambsFoods
                 novaPizza.AdicionarIngredientes(quantos);
                 ImprimirDados(novaPizza);
             }
-            catch (ArgumentException) {
-                Console.WriteLine("Ingredientes não podem ser negativos.");
+            catch (ArgumentException excecao) {
+                Console.WriteLine(excecao.Message);
                 Pausa();
                 return ComprarPizza();
             }
-            catch (InvalidOperationException) {
-                Console.WriteLine("Ingredientes máximos: 8.");
+            catch (InvalidOperationException excecao) {
+                Console.WriteLine(excecao.Message);
                 novaPizza = new Pizza(8);
             }
             
@@ -194,16 +192,36 @@ namespace XulambsFoods
         static void AlterarPedido()
         {
             Cabecalho();
-            Pizza novaPizza = ComprarPizza();
-
             Console.Write("Número do pedido: ");
-            int codigo = LerInteiro();
-
+            int codigo = LerInteiro();          
             Pedido pedido = Localizar(codigo) as Pedido;   //conversão segura: objeto ou nulo
+            
             if (pedido != null)
-                pedido.Adicionar(novaPizza);
-
-            ImprimirDados(pedido);
+            {
+                try
+                {
+                    Pizza novaPizza = ComprarPizza();
+                    pedido.Adicionar(novaPizza);
+                    ImprimirDados(pedido);
+                }
+                catch (PedidoFechadoException fechado)
+                {
+                    Console.WriteLine(fechado.Message);
+                }
+                catch(PedidoCheioException cheio)
+                {
+                    Console.WriteLine(cheio.Message);
+                    Console.Write("Quer fechar o pedido? ");
+                    string resp = Console.ReadLine();
+                    if (resp.Equals("s"))
+                        cheio.FecharPedido();
+                }
+                catch (InvalidOperationException operacao)
+                {
+                    Console.WriteLine(operacao.Message);
+                    AlterarPedido();
+                }
+            };
         }
 
         static object Localizar(int codigo)

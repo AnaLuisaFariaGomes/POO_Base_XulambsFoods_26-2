@@ -76,9 +76,9 @@ namespace XulambsFoods {
 
         private void VerificarInsercao(int quantos) {
             if (quantos < 0)
-                throw new ArgumentException();
+                throw new ArgumentException("Ingredientes não podem ser negativos");
             if (quantos + _quantIngredientes > MaxIngredientes)
-                throw new InvalidOperationException();
+                throw new InvalidOperationException($"Máximo de {MaxIngredientes} ingredientes");
         }
         #endregion
 

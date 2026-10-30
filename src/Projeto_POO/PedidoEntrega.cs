@@ -21,8 +21,10 @@ namespace XulambsFoods {
             _taxaEntrega = _distanciaEntrega.DefinirEntrega();
         }
 
-        protected override bool PodeAdicionar() { //override: modificação da regra original
-            return base.PodeAdicionar() && _pizzas.Count < MaxEntrega;
+        protected override void PodeAdicionar() { //override: modificação da regra original
+            base.PodeAdicionar();
+            if (_pizzas.Count == MaxEntrega)
+                throw new PedidoCheioException(this);
         }
 
         private double ValorTaxa() {

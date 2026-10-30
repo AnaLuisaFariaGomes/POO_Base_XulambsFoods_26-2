@@ -16,13 +16,17 @@ namespace XulambsFoods {
             _idPedido = _data.Day*100 + s_ultimoPedido;
         }
 
-        protected virtual bool PodeAdicionar() {
-            return _aberto;
+        protected virtual void PodeAdicionar() {
+            if (!_aberto)
+                throw new PedidoFechadoException();
         } //virtual: autorização para ser sobrescrito.
 
         public int Adicionar(Pizza pizza) {
-            if (PodeAdicionar() && pizza != null)
-                _pizzas.AddLast(pizza);
+            if (pizza == null)
+                throw new ArgumentNullException("Pizza não foi criada");
+            
+            PodeAdicionar();
+            _pizzas.AddLast(pizza);
             return _pizzas.Count;
         }
 
