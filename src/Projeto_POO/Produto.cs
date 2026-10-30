@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace XulambsFoods
 {
-    abstract class Produto
+    public abstract class Produto
     {
         public abstract double CalcularValorFinal();
     }
